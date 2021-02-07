@@ -1,4 +1,4 @@
-main: Main
+main: main.Main
 version: 1.0
 name: VehiclePlugin
 description: is King

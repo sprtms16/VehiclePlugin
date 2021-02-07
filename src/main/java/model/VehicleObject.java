@@ -16,9 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Getter
@@ -31,7 +33,7 @@ public abstract class VehicleObject {
     private float forwardAccelerationSpeed;
     private float maxBackwardSpeed;
     private float backwardAccelerationSpeed;
-    private float turnningAcceleration;
+    private float turningAcceleration;
     private float gravity;
 
     public static Map<Player, VehicleObject> vehicles = new HashMap<>();
@@ -39,32 +41,36 @@ public abstract class VehicleObject {
     Map<Integer, ArmorStand> seatList;
     private int carType;
 
+    private boolean isSmall;
+
     public VehicleObject(float nowForwardSpeed,
                          float deceleration,
                          float maxForwardSpeed,
                          float forwardAccelerationSpeed,
                          float maxBackwardSpeed,
                          float backwardAccelerationSpeed,
-                         float turnningAcceleration,
+                         float turningAcceleration,
                          float gravity,
                          Player player,
                          int seatCount,
-                         int carType) {
+                         int carType,
+                         boolean isSmall) {
         this.nowForwardSpeed = nowForwardSpeed;
         this.deceleration = deceleration;
         this.maxForwardSpeed = maxForwardSpeed;
         this.forwardAccelerationSpeed = forwardAccelerationSpeed;
         this.maxBackwardSpeed = maxBackwardSpeed;
         this.backwardAccelerationSpeed = backwardAccelerationSpeed;
-        this.turnningAcceleration = turnningAcceleration;
+        this.turningAcceleration = turningAcceleration;
         this.gravity = gravity;
         vehicles.put(player, this);
         seatList = new HashMap<>();
+        this.isSmall = isSmall;
         Stream.iterate(0, n -> n + 1)
                 .limit(seatCount)
                 .forEach(seat -> seatList.put(seat, makeArmorStand(player)));
         ArmorStand seatFirst = seatList.get(0);
-        seatFirst.getEquipment().setHelmet(setItemStacksDurability(Material.FLINT_AND_STEEL, carType));
+        Objects.requireNonNull(seatFirst.getEquipment()).setHelmet(setItemStacksDurability(Material.FLINT_AND_STEEL, carType));
         seatFirst.addPassenger(player);
     }
 
@@ -92,8 +98,7 @@ public abstract class VehicleObject {
         nowForwardSpeed -= backwardAccelerationSpeed;
     }
 
-    private void groundVehicle(PacketEvent e, VehicleObject vo, PacketPlayInSteerVehicle packet, Entity vehicle,
-                               Location vLoc) {
+    private void groundVehicle(@NotNull VehicleObject vo, @NotNull Entity vehicle, @NotNull Location vLoc) {
         // 중력 적용
         vehicle.setVelocity(vLoc.getDirection().multiply(vo.getNowForwardSpeed()).setY(-1 * vo.getGravity()));
         if (vo.getNowForwardSpeed() != 0) {
@@ -121,25 +126,27 @@ public abstract class VehicleObject {
             vehicle.setVelocity(new Vector(0, 1.01F, 0));
     }
 
-    private Location getRightSide(Location location, double distance) {
+    Location getRightSide(Location location, double distance) {
         float angle = location.getYaw() / 60;
         return location.clone().subtract(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply(distance));
     }
 
-    private Location getLeftSide(Location location, double distance) {
+    private Location getLeftSide(Location location) {
         float angle = location.getYaw() / 60;
-        return location.clone().add(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply(distance));
+        return location.clone().add(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply((double) 1));
     }
 
-    private Location getBehindSide(Location location, double distance) {
+    Location getBehindSide(Location location, double distance) {
         double yawRadians = Math.PI * location.getYaw() / 180;
-        return location.clone().add(distance * Math.sin(yawRadians), 0, -distance * Math.cos(yawRadians));
+        return location.clone().add(distance * Math.sin(yawRadians), 0, -1 * distance * Math.cos(yawRadians));
     }
 
     private ArmorStand makeArmorStand(Player player) {
         ArmorStand stand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
         //stand.setSmall(true);
         stand.setVisible(false);
+        stand.setSmall(isSmall);
+        //stand.setGlowing(true);
         stand.setCustomName(player.getUniqueId().toString());
         return stand;
     }
@@ -163,25 +170,26 @@ public abstract class VehicleObject {
 
         // 플레이어가 탑승 중인 엔티티가 vehicles 리스트에 포함되어 있을 경우
 
-        boolean leftRight = packet.a();
+        //boolean leftRight = packet.a();
         float forwardBackward = packet.c();
 
         //ItemStack item = vehicle.getHelmet();
         VehicleObject vo = vehicles.get(player);//main.MainVariables.vehicles.get(vehicle);
+        assert vehicle != null;
         Location vLoc = vehicle.getLocation();
 
-        if (forwardBackward == 0) {
-            // 정지 모델링, 사운드 적용
-            //item.setDurability((short) 35);
-            // player.playSound(vLoc, Sound.BLOCK_ANVIL_STEP, 0.5F, 0.4F);
-        } else {
-            // 이동 모델링, 사운드 적용
-            //item.setDurability((short) 40);
-            // player.playSound(vLoc, Sound.BLOCK_ANVIL_STEP, 0.5F, 1.2F);
-        }
+//        if (forwardBackward == 0) {
+//            // 정지 모델링, 사운드 적용
+//            //item.setDurability((short) 35);
+//            // player.playSound(vLoc, Sound.BLOCK_ANVIL_STEP, 0.5F, 0.4F);
+//        } else {
+//            // 이동 모델링, 사운드 적용
+//            //item.setDurability((short) 40);
+//            // player.playSound(vLoc, Sound.BLOCK_ANVIL_STEP, 0.5F, 1.2F);
+//        }
 
         // 위 아래 관련
-        groundVehicle(e, vo, packet, vehicle, vLoc);
+        groundVehicle(vo, vehicle, vLoc);
 
         if (forwardBackward == 0) {
             // 앞이든 뒤든 안누르면 감속 시작.
@@ -200,30 +208,35 @@ public abstract class VehicleObject {
         // A키 - 좌측
         if (packet.b() > 0) {
             //log.log(Level.INFO, "좌측으로");
-            ((CraftArmorStand) vehicle).getHandle().yaw = (vLoc.getYaw() + (vo.getTurnningAcceleration() * -1));
+            ((CraftArmorStand) vehicle).getHandle().yaw = (vLoc.getYaw() + (vo.getTurningAcceleration() * -1));
         }
         // D키 - 우측
         if (packet.b() < 0) {
             //log.log(Level.INFO, "우측으로");
-            ((CraftArmorStand) vehicle).getHandle().yaw = (vLoc.getYaw() + vo.getTurnningAcceleration());
+            ((CraftArmorStand) vehicle).getHandle().yaw = (vLoc.getYaw() + vo.getTurningAcceleration());
         }
 
+        //((CraftArmorStand) vehicle).getHandle().yaw = player.getLocation().getYaw();
 
+
+        seatSorting(vehicle);
+        // 최종적으로 모델링 적용
+        //vehicle.setHelmet(item);
+    }
+
+    public void seatSorting(Entity vehicle) {
         seatList.forEach((location, seat) -> {
-            if (location == 0) {
-
-            } else if (location % 2 == 0) {
-                seat.setVelocity(getBehindSide(seatList.get(location - 2).getLocation(), 1).toVector()
-                        .subtract(seat.getLocation().toVector()));
-                ((CraftArmorStand) seat).getHandle().yaw = vehicle.getLocation().getYaw();
-            } else {
-                seat.setVelocity(getRightSide(seatList.get(location - 1).getLocation(), 1).toVector()
-                        .subtract(seat.getLocation().toVector()));
+            if (location != 0) {
+                if (location % 2 == 0) {
+                    seat.setVelocity(getBehindSide(seatList.get(location - 2).getLocation(), 2).toVector()
+                            .subtract(seat.getLocation().toVector()));
+                } else {
+                    seat.setVelocity(getRightSide(seatList.get(location - 1).getLocation(), 3).toVector()
+                            .subtract(seat.getLocation().toVector()));
+                }
                 ((CraftArmorStand) seat).getHandle().yaw = vehicle.getLocation().getYaw();
             }
 
         });
-        // 최종적으로 모델링 적용
-        //vehicle.setHelmet(item);
     }
 }
