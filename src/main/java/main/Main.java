@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class Main extends JavaPlugin {
 
     public static List<String> TYPE_LIST;
+    public static int COOL_DOWN;
 
 
     @SneakyThrows
@@ -56,9 +57,7 @@ public class Main extends JavaPlugin {
     private void init(FileConfiguration configuration) throws IOException {
         saveDefaultConfig();
         TYPE_LIST = getConfig().getStringList("TypeList");
-        for(String s : TYPE_LIST){
-            getLogger().log(Level.INFO,s);
-        }
+        COOL_DOWN = getConfig().getInt("CoolDown", 5);
     }
 
 

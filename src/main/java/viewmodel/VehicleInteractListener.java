@@ -26,9 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
-import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 public class VehicleInteractListener implements Listener {
@@ -43,14 +41,14 @@ public class VehicleInteractListener implements Listener {
         Player player = event.getPlayer();
         Action action = event.getAction();
         Optional<ItemStack> maybeItem = Optional.ofNullable(event.getItem());
+//
+//        plugin.getLogger().log(Level.INFO, maybeItem
+//                .map(ItemStack::getItemMeta)
+//                .map(ItemMeta::getLore)
+//                .map(list -> list.get(0)).orElse(""));
 
-        plugin.getLogger().log(Level.INFO, maybeItem
-                .map(ItemStack::getItemMeta)
-                .map(ItemMeta::getLore)
-                .map(list -> list.get(0)).orElse(""));
 
-
-        if (Objects.equals(event.getHand(), EquipmentSlot.HAND)) {
+        if (Objects.equals(event.getHand(), EquipmentSlot.HAND) && !player.hasCooldown(event.getMaterial())) {
             if (action == Action.RIGHT_CLICK_AIR &&
                     maybeItem
                             .map(ItemStack::getItemMeta)
@@ -59,13 +57,8 @@ public class VehicleInteractListener implements Listener {
                             .map(lore -> Main.TYPE_LIST.contains(lore))
                             .orElse(false) &&
                     !VehicleObject.vehicles.containsKey(player)) {
-//                String lore = maybeItem
-//                        .map(ItemStack::getItemMeta)
-//                        .map(ItemMeta::getLore)
-//                        .map(list -> list.get(0)).orElse("");
 
-                //Main.TYPE_LIST.contains(itemStack.getItemMeta().getDisplayName())
-
+                player.setCooldown(event.getMaterial(), Main.COOL_DOWN * 20);
 
                 maybeItem
                         .map(ItemStack::getItemMeta)
@@ -195,7 +188,6 @@ public class VehicleInteractListener implements Listener {
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         Optional<Entity> maybeVehicle = Optional.ofNullable(event.getPlayer().getVehicle());
         maybeVehicle.ifPresent(entity -> {
-            getLogger().log(Level.INFO, "PlayerJoinEvent");
             entity.remove();
         });
     }
@@ -204,7 +196,6 @@ public class VehicleInteractListener implements Listener {
     public void onPlayerJoinEvent(PlayerBedLeaveEvent event) {
         Optional<Entity> maybeVehicle = Optional.ofNullable(event.getPlayer().getVehicle());
         maybeVehicle.ifPresent(entity -> {
-            getLogger().log(Level.INFO, "PlayerBedLeaveEvent");
             entity.remove();
         });
     }
@@ -213,7 +204,6 @@ public class VehicleInteractListener implements Listener {
     public void onPlayerJoinEvent(PlayerQuitEvent event) {
         Optional<Entity> maybeVehicle = Optional.ofNullable(event.getPlayer().getVehicle());
         maybeVehicle.ifPresent(entity -> {
-            getLogger().log(Level.INFO, "PlayerQuitEvent");
             entity.remove();
         });
     }
