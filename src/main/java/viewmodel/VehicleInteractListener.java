@@ -107,37 +107,59 @@ public class VehicleInteractListener implements Listener {
         }
     }
 
-
     @EventHandler
     public void onInteractiveEntity(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
+        Optional<Player> maybeTargetPlayer = Optional.empty();
+        Map<Player, VehicleObject> vehicles = VehicleObject.vehicles;
         if (event.getRightClicked() instanceof Player) {
-            Player targetPlayer = (Player) event.getRightClicked();
-            if (VehicleObject.vehicles.containsKey(targetPlayer)) {
-                VehicleObject vehicle = VehicleObject.vehicles.get(targetPlayer);
-                Map<Integer, ArmorStand> seatList = vehicle.getSeatList();
-                if (seatList.size() > 1) {
-                    int seatLocation = getVehicleListByArmorStand(seatList, seatList.get(0));
-                    findSeatLocation(player, seatList, seatLocation);
-                }
-            }
+            maybeTargetPlayer = Optional.of((Player) event.getRightClicked());
+
         } else if (event.getRightClicked() instanceof ArmorStand) {
             ArmorStand targetArmorStand = (ArmorStand) event.getRightClicked();
-            if (targetArmorStand.getPassengers().isEmpty()) {
-                targetArmorStand.addPassenger(player);
-            } else {
-                UUID uuid = UUID.fromString(Objects.requireNonNull(targetArmorStand.getCustomName()));
-                Player carOwner = getPlayerByUuid(uuid);
-                if (VehicleObject.vehicles.containsKey(carOwner)) {
-                    VehicleObject vehicle = VehicleObject.vehicles.get(carOwner);
-                    Map<Integer, ArmorStand> seatList = vehicle.getSeatList();
-                    int seatLocation = getVehicleListByArmorStand(seatList, targetArmorStand);
-                    findSeatLocation(player, seatList, seatLocation);
-
-                }
+            UUID uuid = UUID.fromString(Objects.requireNonNull(targetArmorStand.getCustomName()));
+            maybeTargetPlayer = Optional.of(getPlayerByUuid(uuid));
+        }
+        if (maybeTargetPlayer.map(vehicles::containsKey).orElse(false)) {
+            VehicleObject vehicle = maybeTargetPlayer.map(vehicles::get).get();
+            if (!vehicle.seatPlayer(player)) {
+                player.sendTitle("빈자리가 없습니다.", "남은자리 0", 20, 40, 20);
             }
         }
+
     }
+
+//
+//    @EventHandler
+//    public void onInteractiveEntity(PlayerInteractAtEntityEvent event) {
+//        Player player = event.getPlayer();
+//        if (event.getRightClicked() instanceof Player) {
+//            Player targetPlayer = (Player) event.getRightClicked();
+//            if (VehicleObject.vehicles.containsKey(targetPlayer)) {
+//                VehicleObject vehicle = VehicleObject.vehicles.get(targetPlayer);
+//                Map<Integer, ArmorStand> seatList = vehicle.getSeatList();
+//                if (seatList.size() > 1) {
+//                    int seatLocation = getVehicleListByArmorStand(seatList, seatList.get(0));
+//                    findSeatLocation(player, seatList, seatLocation);
+//                }
+//            }
+//        } else if (event.getRightClicked() instanceof ArmorStand) {
+//            ArmorStand targetArmorStand = (ArmorStand) event.getRightClicked();
+//            if (targetArmorStand.getPassengers().isEmpty()) {
+//                targetArmorStand.addPassenger(player);
+//            } else {
+//                UUID uuid = UUID.fromString(Objects.requireNonNull(targetArmorStand.getCustomName()));
+//                Player carOwner = getPlayerByUuid(uuid);
+//                if (VehicleObject.vehicles.containsKey(carOwner)) {
+//                    VehicleObject vehicle = VehicleObject.vehicles.get(carOwner);
+//                    Map<Integer, ArmorStand> seatList = vehicle.getSeatList();
+//                    int seatLocation = getVehicleListByArmorStand(seatList, targetArmorStand);
+//                    findSeatLocation(player, seatList, seatLocation);
+//
+//                }
+//            }
+//        }
+//    }
 
     public int getVehicleListByArmorStand(Map<Integer, ArmorStand> vehicleList, ArmorStand stand) {
         for (Map.Entry<Integer, ArmorStand> vehicle : vehicleList.entrySet())
@@ -175,12 +197,21 @@ public class VehicleInteractListener implements Listener {
 
     @EventHandler
     public void onPlayerOffPassenger(EntityDismountEvent event) {
-        if (VehicleObject.vehicles.containsKey(event.getEntity())) {
-            VehicleObject vehicle = VehicleObject.vehicles.get(event.getEntity());
-            vehicle.getSeatList().forEach((integer, armorStand) -> {
-                armorStand.remove();
-            });
-            VehicleObject.vehicles.remove(event.getEntity());
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (event.getDismounted() instanceof ArmorStand) {
+                ArmorStand targetArmorStand = (ArmorStand) event.getDismounted();
+                UUID uuid = UUID.fromString(Objects.requireNonNull(targetArmorStand.getCustomName()));
+                Player ownerPlayer = getPlayerByUuid(uuid);
+                if (VehicleObject.vehicles.containsKey(ownerPlayer)) {
+                    VehicleObject vehicle = VehicleObject.vehicles.get(ownerPlayer);
+                    if (vehicle.seatLeavePlayer(player) <= 0
+                            || player.getUniqueId().toString().equals(ownerPlayer.getUniqueId().toString())) {
+                        vehicle.getSeatList().forEach((integer, armorStand) -> armorStand.remove());
+                        VehicleObject.vehicles.remove(ownerPlayer);
+                    }
+                }
+            }
         }
     }
 

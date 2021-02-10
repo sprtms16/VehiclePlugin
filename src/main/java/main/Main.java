@@ -12,7 +12,6 @@ import viewmodel.VehicleInteractListener;
 import viewmodel.VehicleMovingAdapter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -77,7 +76,8 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         super.onDisable();
         for (UUID uuid : getServer().getOnlinePlayers().stream().map(Entity::getUniqueId).collect(Collectors.toList())) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=minecraft:armor_stand,name=" + uuid.toString() + "]");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                    "kill @e[type=minecraft:armor_stand,name=" + uuid.toString() + "]");
         }
     }
 }

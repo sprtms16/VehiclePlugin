@@ -4,6 +4,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_16_R3.PacketPlayInSteerVehicle;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 @Getter
@@ -42,6 +44,8 @@ public abstract class VehicleObject {
     private int carType;
 
     private boolean isSmall;
+
+    private Map<Player, Integer> seaterList;
 
     public VehicleObject(float nowForwardSpeed,
                          float deceleration,
@@ -72,6 +76,8 @@ public abstract class VehicleObject {
         ArmorStand seatFirst = seatList.get(0);
         Objects.requireNonNull(seatFirst.getEquipment()).setHelmet(setItemStacksDurability(Material.FLINT_AND_STEEL, carType));
         seatFirst.addPassenger(player);
+        seaterList = new HashMap<>();
+        seaterList.put(player,0);
     }
 
     private void releaseAcceleration() {
@@ -144,7 +150,7 @@ public abstract class VehicleObject {
     private ArmorStand makeArmorStand(Player player) {
         ArmorStand stand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
         //stand.setSmall(true);
-        stand.setVisible(false);
+        //stand.setVisible(false);
         stand.setSmall(isSmall);
         //stand.setGlowing(true);
         stand.setCustomName(player.getUniqueId().toString());
@@ -238,5 +244,22 @@ public abstract class VehicleObject {
             }
 
         });
+    }
+
+    public boolean seatPlayer(Player player){
+        if(seaterList.size() >= seatList.size()){
+            return false;
+        }else{
+            seaterList.put(player,seaterList.size());
+            seatList.get(seaterList.size()-1).addPassenger(player);
+            return true;
+        }
+    }
+
+    public int seatLeavePlayer(Player player){
+        if(seaterList.containsKey(player)){
+            seaterList.remove(player);
+        }
+        return seaterList.size();
     }
 }
