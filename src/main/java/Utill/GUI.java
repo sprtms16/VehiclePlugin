@@ -55,19 +55,19 @@ public abstract class GUI {
 
     public abstract void onClick(InventoryClickEvent e);
 
-    protected void setItem(String name, List<String> lore, Material m, short data, int amount, int slot, String value, boolean glow) {
-        ItemStack item = new ItemStack(m, amount, data);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        if (lore != null) meta.setLore(lore);
-        if (glow) {
-            meta.addEnchant(Enchantment.LURE, 1, false);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
-        item.setItemMeta(meta);
-        slotMap.put(slot, value);
-        inv.setItem(slot, item);
-    }
+//    protected void setItem(String name, List<String> lore, Material m, short data, int amount, int slot, String value, boolean glow) {
+//        ItemStack item = new ItemStack(m, amount, data);
+//        ItemMeta meta = item.getItemMeta();
+//        meta.setDisplayName(name);
+//        if (lore != null) meta.setLore(lore);
+//        if (glow) {
+//            meta.addEnchant(Enchantment.LURE, 1, false);
+//            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+//        }
+//        item.setItemMeta(meta);
+//        slotMap.put(slot, value);
+//        inv.setItem(slot, item);
+//    }
 
     protected void setItem(String name, List<String> lore, Material m, int amount, int slot, String value, boolean glow) {
         ItemStack item = new ItemStack(m, amount);

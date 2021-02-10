@@ -12,6 +12,7 @@ import viewmodel.VehicleInteractListener;
 import viewmodel.VehicleMovingAdapter;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -58,6 +59,17 @@ public class Main extends JavaPlugin {
         saveDefaultConfig();
         TYPE_LIST = getConfig().getStringList("TypeList");
         COOL_DOWN = getConfig().getInt("CoolDown", 5);
+        for (String type : TYPE_LIST) {
+            int seatCount = getConfig().getInt(type + ".seatCount");
+            if (seatCount > 20) {
+                getLogger().log(Level.WARNING, "The seatCount of this type(" + type + ") is " + seatCount + ", " +
+                        "which is too big. Change it to the default value of 20.");
+
+                getConfig().set(type + ".seatCount", 20);
+                saveConfig();
+            }
+        }
+
     }
 
 
