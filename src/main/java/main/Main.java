@@ -60,6 +60,7 @@ public class Main extends JavaPlugin {
                     if (sender.isOp()) {
                         if (sender.getGameMode().equals(GameMode.CREATIVE)) {
                             new GiveKeyGUI(sender, this);
+                            return true;
                         } else {
                             commandSender.sendMessage(ChatColor.DARK_GREEN +
                                     "크리에이티브 모드에서만 가능합니다.");

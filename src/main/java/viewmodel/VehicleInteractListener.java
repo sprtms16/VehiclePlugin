@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -134,6 +135,17 @@ public class VehicleInteractListener implements Listener {
                         VehicleObject.vehicles.remove(ownerPlayer);
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void portalEvent(EntityPortalEvent event){
+        if(event.getEntity() instanceof ArmorStand){
+            ArmorStand stand = (ArmorStand) event.getEntity();
+            UUID uuid = UUID.fromString(stand.getCustomName());
+            if(!Bukkit.getPlayer(uuid).isEmpty()){
+                event.setCancelled(true);
             }
         }
     }
