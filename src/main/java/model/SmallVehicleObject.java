@@ -72,9 +72,11 @@ public class SmallVehicleObject extends VehicleObject {
                 if (location % 2 == 0) {
                     seat.setVelocity(getBehindSide(seatList.get(location - 2).getLocation(), 1).toVector()
                             .subtract(seat.getLocation().toVector()));
+                    seat.teleport(getBehindSide(seatList.get(location - 2).getLocation(), 1));
                 } else {
-                    seat.setVelocity(getRightSide(seatList.get(location - 1).getLocation(), 1).toVector()
+                    seat.setVelocity(getRightSide(seatList.get(location - 1).getLocation(), 2).toVector()
                             .subtract(seat.getLocation().toVector()));
+                    seat.teleport(getRightSide(seatList.get(location - 1).getLocation(), 2));
                 }
                 ((CraftArmorStand) seat).getHandle().yaw = vehicle.getLocation().getYaw();
             }

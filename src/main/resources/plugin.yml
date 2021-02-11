@@ -4,3 +4,7 @@ name: VehiclePlugin
 description: is King
 depend: [ProtocolLib]
 api-version: 1.13
+commands:
+  vehicle:
+    description: 설정된 탈것을 가져옵니다.
+#    usage: /vehicle (게임모드에서만 가능)

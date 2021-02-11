@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -133,26 +134,25 @@ public abstract class VehicleObject {
     }
 
     Location getRightSide(Location location, double distance) {
-        float angle = location.getYaw() / 60;
+        float angle = (location.getYaw()%360) / 60;
         return location.clone().subtract(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply(distance));
     }
 
     private Location getLeftSide(Location location) {
-        float angle = location.getYaw() / 60;
+        float angle = (location.getYaw()%360) / 60;
         return location.clone().add(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply((double) 1));
     }
 
     Location getBehindSide(Location location, double distance) {
-        double yawRadians = Math.PI * location.getYaw() / 180;
+        double yawRadians = Math.PI * (location.getYaw()%360) / 180;
+        //Bukkit.getLogger().log(Level.INFO,Math.PI * (location.getYaw()%360) / 180 + "is yaw in getBehindSide");
         return location.clone().add(distance * Math.sin(yawRadians), 0, -1 * distance * Math.cos(yawRadians));
     }
 
     private ArmorStand makeArmorStand(Player player) {
         ArmorStand stand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-        //stand.setSmall(true);
-        //stand.setVisible(false);
+        stand.setVisible(false);
         stand.setSmall(isSmall);
-        //stand.setGlowing(true);
         stand.setCustomName(player.getUniqueId().toString());
         return stand;
     }
@@ -222,7 +222,7 @@ public abstract class VehicleObject {
             ((CraftArmorStand) vehicle).getHandle().yaw = (vLoc.getYaw() + vo.getTurningAcceleration());
         }
 
-        //((CraftArmorStand) vehicle).getHandle().yaw = player.getLocation().getYaw();
+//        ((CraftArmorStand) vehicle).getHandle().yaw = player.getLocation().getYaw();
 
 
         seatSorting(vehicle);
@@ -236,9 +236,11 @@ public abstract class VehicleObject {
                 if (location % 2 == 0) {
                     seat.setVelocity(getBehindSide(seatList.get(location - 2).getLocation(), 2).toVector()
                             .subtract(seat.getLocation().toVector()));
+                    seat.teleport(getBehindSide(seatList.get(location - 2).getLocation(), 2));
                 } else {
                     seat.setVelocity(getRightSide(seatList.get(location - 1).getLocation(), 3).toVector()
                             .subtract(seat.getLocation().toVector()));
+                    seat.teleport(getRightSide(seatList.get(location - 1).getLocation(), 3));
                 }
                 ((CraftArmorStand) seat).getHandle().yaw = vehicle.getLocation().getYaw();
             }

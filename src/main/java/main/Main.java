@@ -3,9 +3,12 @@ package main;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import lombok.SneakyThrows;
+import model.GiveKeyGUI;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import viewmodel.GUIInteractListener;
 import viewmodel.VehicleInteractListener;
@@ -30,9 +33,7 @@ public class Main extends JavaPlugin {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     "kill @e[type=minecraft:armor_stand,name=" + uuid.toString() + "]");
         }
-
-        FileConfiguration configuration = getConfig();
-        init(configuration);
+        init();
 
         getServer()
                 .getPluginManager()
@@ -52,9 +53,30 @@ public class Main extends JavaPlugin {
                         new VehicleMovingAdapter(this,
                                 PacketType.Play.Client.STEER_VEHICLE)
                 );
+        getCommand("vehicle").setExecutor((commandSender, command, s, strings) -> {
+            if (command.getName().equalsIgnoreCase("vehicle")) {
+                if (commandSender instanceof Player) {
+                    Player sender = (Player) commandSender;
+                    if (sender.isOp()) {
+                        if (sender.getGameMode().equals(GameMode.CREATIVE)) {
+                            new GiveKeyGUI(sender, this);
+                        } else {
+                            commandSender.sendMessage(ChatColor.DARK_GREEN +
+                                    "크리에이티브 모드에서만 가능합니다.");
+                            //commandSender.sendMessage(ChatColor.DARK_GREEN +"Command execution is possible only in Creative mode");
+                        }
+                    } else {
+                        commandSender.sendMessage(ChatColor.RED +
+                                "권한이 부족합니다.");
+                        //commandSender.sendMessage(ChatColor.RED +"Command execution denied because you do not have permission");
+                    }
+                }
+            }
+            return false;
+        });
     }
 
-    private void init(FileConfiguration configuration) throws IOException {
+    private void init() throws IOException {
         saveDefaultConfig();
         TYPE_LIST = getConfig().getStringList("TypeList");
         COOL_DOWN = getConfig().getInt("CoolDown", 5);
@@ -68,7 +90,6 @@ public class Main extends JavaPlugin {
                 saveConfig();
             }
         }
-
     }
 
 
