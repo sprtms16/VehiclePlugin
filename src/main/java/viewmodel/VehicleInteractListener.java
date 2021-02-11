@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 
 public class VehicleInteractListener implements Listener {
@@ -110,7 +109,7 @@ public class VehicleInteractListener implements Listener {
                     if (vehicle.getValue().getSeaterList().containsKey(player)) {
                         event.setCancelled(true);
 //                        Bukkit.getLogger().log(Level.INFO, "데미지가 무효화 되었습니다.");
-                        return ;
+                        return;
                     }
                 }
 

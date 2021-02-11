@@ -4,7 +4,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_16_R3.PacketPlayInSteerVehicle;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,10 +19,8 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 @Getter
@@ -78,7 +75,7 @@ public abstract class VehicleObject {
         Objects.requireNonNull(seatFirst.getEquipment()).setHelmet(setItemStacksDurability(Material.FLINT_AND_STEEL, carType));
         seatFirst.addPassenger(player);
         seaterList = new HashMap<>();
-        seaterList.put(player,0);
+        seaterList.put(player, 0);
     }
 
     private void releaseAcceleration() {
@@ -134,17 +131,17 @@ public abstract class VehicleObject {
     }
 
     Location getRightSide(Location location, double distance) {
-        float angle = (location.getYaw()%360) / 60;
+        float angle = (location.getYaw() % 360) / 60;
         return location.clone().subtract(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply(distance));
     }
 
     private Location getLeftSide(Location location) {
-        float angle = (location.getYaw()%360) / 60;
+        float angle = (location.getYaw() % 360) / 60;
         return location.clone().add(new Vector(Math.cos(angle), 0, Math.sin(angle)).normalize().multiply((double) 1));
     }
 
     Location getBehindSide(Location location, double distance) {
-        double yawRadians = Math.PI * (location.getYaw()%360) / 180;
+        double yawRadians = Math.PI * (location.getYaw() % 360) / 180;
         //Bukkit.getLogger().log(Level.INFO,Math.PI * (location.getYaw()%360) / 180 + "is yaw in getBehindSide");
         return location.clone().add(distance * Math.sin(yawRadians), 0, -1 * distance * Math.cos(yawRadians));
     }
@@ -178,6 +175,17 @@ public abstract class VehicleObject {
 
         //boolean leftRight = packet.a();
         float forwardBackward = packet.c();
+
+        //packet.e() :: shift
+        //packet.d() :: space
+
+//        플라이 기능
+//        if(packet.d()){
+//            gravity = -1 * Math.abs(gravity);
+//        }else{
+//            gravity = Math.abs(gravity);
+//        }
+
 
         //ItemStack item = vehicle.getHelmet();
         VehicleObject vo = vehicles.get(player);//main.MainVariables.vehicles.get(vehicle);
@@ -248,18 +256,18 @@ public abstract class VehicleObject {
         });
     }
 
-    public boolean seatPlayer(Player player){
-        if(seaterList.size() >= seatList.size()){
+    public boolean seatPlayer(Player player) {
+        if (seaterList.size() >= seatList.size()) {
             return false;
-        }else{
-            seaterList.put(player,seaterList.size());
-            seatList.get(seaterList.size()-1).addPassenger(player);
+        } else {
+            seaterList.put(player, seaterList.size());
+            seatList.get(seaterList.size() - 1).addPassenger(player);
             return true;
         }
     }
 
-    public int seatLeavePlayer(Player player){
-        if(seaterList.containsKey(player)){
+    public int seatLeavePlayer(Player player) {
+        if (seaterList.containsKey(player)) {
             seaterList.remove(player);
         }
         return seaterList.size();
