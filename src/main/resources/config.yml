@@ -1,29 +1,6 @@
 TYPE1:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE1
-  deceleration: 0.2
-  forwardAccelerationSpeed: 0.1
-  gravity: 0.7
-  maxBackwardSpeed: -0.2
-  maxForwardSpeed: 0.5
-  nowForwardSpeed: 0.0
-  seatCount: 4
-  small: false
-  turningAcceleration: 7.0
-TYPE2:
-  backwardAccelerationSpeed: 0.1
-  carType: TYPE2
-  deceleration: 0.2
-  forwardAccelerationSpeed: 0.1
-  gravity: 0.7
-  maxBackwardSpeed: -0.2
-  maxForwardSpeed: 0.5
-  nowForwardSpeed: 0.0
-  seatCount: 4
-  small: false
-  turningAcceleration: 7.0
-TYPE3:
-  backwardAccelerationSpeed: 0.1
+  keyName: 레이싱카
   carType: TYPE3
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
@@ -32,11 +9,12 @@ TYPE3:
   maxForwardSpeed: 0.5
   nowForwardSpeed: 0.0
   seatCount: 4
-  small: false
+  small: true
   turningAcceleration: 7.0
-TYPE4:
+TYPE2:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE4
+  keyName: 레이싱카2
+  carType: TYPE6
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -44,11 +22,35 @@ TYPE4:
   maxForwardSpeed: 0.5
   nowForwardSpeed: 0.0
   seatCount: 4
-  small: false
+  small: true
+  turningAcceleration: 7.0
+TYPE3:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE9
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE4:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE12
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
   turningAcceleration: 7.0
 TYPE5:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE5
+  carType: TYPE16
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -60,7 +62,7 @@ TYPE5:
   turningAcceleration: 7.0
 TYPE6:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE6
+  carType: TYPE19
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -72,7 +74,7 @@ TYPE6:
   turningAcceleration: 7.0
 TYPE7:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE7
+  carType: TYPE22
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -84,7 +86,7 @@ TYPE7:
   turningAcceleration: 7.0
 TYPE8:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE8
+  carType: TYPE25
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -92,11 +94,11 @@ TYPE8:
   maxForwardSpeed: 0.5
   nowForwardSpeed: 0.0
   seatCount: 4
-  small: false
+  small: true
   turningAcceleration: 7.0
 TYPE9:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE9
+  carType: TYPE28
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -104,11 +106,11 @@ TYPE9:
   maxForwardSpeed: 0.5
   nowForwardSpeed: 0.0
   seatCount: 4
-  small: false
+  small: true
   turningAcceleration: 7.0
 TYPE10:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE10
+  carType: TYPE32
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -116,11 +118,11 @@ TYPE10:
   maxForwardSpeed: 0.5
   nowForwardSpeed: 0.0
   seatCount: 4
-  small: false
+  small: true
   turningAcceleration: 7.0
 TYPE11:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE11
+  carType: TYPE35
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -132,7 +134,7 @@ TYPE11:
   turningAcceleration: 7.0
 TYPE12:
   backwardAccelerationSpeed: 0.1
-  carType: TYPE12
+  carType: TYPE38
   deceleration: 0.2
   forwardAccelerationSpeed: 0.1
   gravity: 0.7
@@ -140,7 +142,103 @@ TYPE12:
   maxForwardSpeed: 0.5
   nowForwardSpeed: 0.0
   seatCount: 4
-  small: false
+  small: true
+  turningAcceleration: 7.0
+TYPE13:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE41
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE14:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE44
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE15:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE48
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE16:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE51
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE17:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE54
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE18:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE57
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE19:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE60
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
+  turningAcceleration: 7.0
+TYPE20:
+  backwardAccelerationSpeed: 0.1
+  carType: TYPE64
+  deceleration: 0.2
+  forwardAccelerationSpeed: 0.1
+  gravity: 0.7
+  maxBackwardSpeed: -0.2
+  maxForwardSpeed: 0.5
+  nowForwardSpeed: 0.0
+  seatCount: 4
+  small: true
   turningAcceleration: 7.0
 TypeList:
   - TYPE1
@@ -155,4 +253,12 @@ TypeList:
   - TYPE10
   - TYPE11
   - TYPE12
+  - TYPE13
+  - TYPE14
+  - TYPE15
+  - TYPE16
+  - TYPE17
+  - TYPE18
+  - TYPE19
+  - TYPE20
 CoolDown: 5

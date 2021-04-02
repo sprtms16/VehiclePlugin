@@ -7,7 +7,6 @@ import model.SmallVehicleObject;
 import model.VehicleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +25,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import static main.Main.killVehicleEntityByCustomNameIsUUID;
+
 
 public class VehicleInteractListener implements Listener {
     JavaPlugin plugin;
@@ -39,7 +40,7 @@ public class VehicleInteractListener implements Listener {
         Player player = event.getPlayer();
         Action action = event.getAction();
         Optional<ItemStack> maybeItem = Optional.ofNullable(event.getItem());
-
+        plugin.reloadConfig();
 
         if (Objects.equals(event.getHand(), EquipmentSlot.HAND) && !player.hasCooldown(event.getMaterial())) {
             if (action == Action.RIGHT_CLICK_AIR &&
@@ -47,7 +48,7 @@ public class VehicleInteractListener implements Listener {
                             .map(ItemStack::getItemMeta)
                             .map(ItemMeta::getLore)
                             .map(list -> list.get(0))
-                            .map(lore -> Main.TYPE_LIST.contains(lore))
+                            .map(lore -> plugin.getConfig().getStringList("TypeList").stream().anyMatch(s -> s.equals(lore)))
                             .orElse(false) &&
                     !VehicleObject.vehicles.containsKey(player)) {
 
@@ -57,16 +58,15 @@ public class VehicleInteractListener implements Listener {
                         .map(ItemStack::getItemMeta)
                         .map(ItemMeta::getLore)
                         .map(list -> list.get(0))
+                        .filter(lore -> plugin.getConfig().getStringList("TypeList").stream().anyMatch(s -> s.equals(lore)))
                         .ifPresent(lore -> {
-                            if (plugin.getConfig().get(lore, null) != null) {
-                                ConfigVehicleVO vo = new ConfigVehicleVO(plugin.getConfig(), lore);
-                                if (vo.isSmall()) {
-                                    VehicleObject.vehicles.put(player, new SmallVehicleObject(vo, player));
-                                } else {
-                                    VehicleObject.vehicles.put(player, new BigVehicleObject(vo, player));
-                                }
-                                event.setCancelled(true);
+                            ConfigVehicleVO vo = new ConfigVehicleVO(plugin.getConfig(), lore);
+                            if (vo.isSmall()) {
+                                VehicleObject.vehicles.put(player, new SmallVehicleObject(vo, player));
+                            } else {
+                                VehicleObject.vehicles.put(player, new BigVehicleObject(vo, player));
                             }
+                            event.setCancelled(true);
                         });
             }
         }
@@ -87,9 +87,11 @@ public class VehicleInteractListener implements Listener {
                 maybeTargetPlayer = Optional.ofNullable(Bukkit.getPlayer(uuid));
             }
             if (maybeTargetPlayer.map(vehicles::containsKey).orElse(false)) {
-                VehicleObject vehicle = maybeTargetPlayer.map(vehicles::get).get();
-                if (!vehicle.seatPlayer(player)) {
-                    player.sendTitle("빈자리가 없습니다.", "남은자리 0", 20, 40, 20);
+                if (maybeTargetPlayer.map(vehicles::get).isPresent()) {
+                    VehicleObject vehicle = maybeTargetPlayer.map(vehicles::get).get();
+                    if (!vehicle.seatPlayer(player)) {
+                        player.sendTitle("빈자리가 없습니다.", "남은자리 0", 20, 40, 20);
+                    }
                 }
             }
         }
@@ -99,22 +101,13 @@ public class VehicleInteractListener implements Listener {
     public void onBlockBetweenDamageIgnore(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             if ("EntityDamageEvent".equals(event.getEventName())) {
-//                Bukkit.getLogger().log(Level.INFO, "데미지가 무효화를 시작합니다.");
                 Player player = (Player) event.getEntity();
-//                Bukkit.getLogger().log(Level.INFO, "무효화 대상 탐색중입니다.");
                 for (Map.Entry<Player, VehicleObject> vehicle : VehicleObject.vehicles.entrySet()) {
-//                    Bukkit.getLogger().log(Level.INFO, vehicle.getKey().getDisplayName() + "의 차량을 탐색합니다.");
-//                    Bukkit.getLogger().log(Level.INFO, player.getDisplayName() + "해당유저를 탐색합니다.");
-//                    Bukkit.getLogger().log(Level.INFO, vehicle.getValue().getSeaterList().toString());
-
                     if (vehicle.getValue().getSeaterList().containsKey(player)) {
                         event.setCancelled(true);
-//                        Bukkit.getLogger().log(Level.INFO, "데미지가 무효화 되었습니다.");
                         return;
                     }
                 }
-
-
             }
         }
     }
@@ -129,8 +122,8 @@ public class VehicleInteractListener implements Listener {
                 Player ownerPlayer = Bukkit.getPlayer(uuid);
                 if (VehicleObject.vehicles.containsKey(ownerPlayer)) {
                     VehicleObject vehicle = VehicleObject.vehicles.get(ownerPlayer);
-                    if (vehicle.seatLeavePlayer(player) <= 0
-                            || player.getUniqueId().toString().equals(ownerPlayer.getUniqueId().toString())) {
+                    if (ownerPlayer != null && (vehicle.seatLeavePlayer(player) <= 0
+                            || player.getUniqueId().toString().equals(ownerPlayer.getUniqueId().toString()))) {
                         vehicle.getSeatList().forEach((integer, armorStand) -> armorStand.remove());
                         VehicleObject.vehicles.remove(ownerPlayer);
                     }
@@ -140,11 +133,11 @@ public class VehicleInteractListener implements Listener {
     }
 
     @EventHandler
-    public void portalEvent(EntityPortalEvent event){
-        if(event.getEntity() instanceof ArmorStand){
+    public void portalEvent(EntityPortalEvent event) {
+        if (event.getEntity() instanceof ArmorStand) {
             ArmorStand stand = (ArmorStand) event.getEntity();
-            UUID uuid = UUID.fromString(stand.getCustomName());
-            if(!Bukkit.getPlayer(uuid).isEmpty()){
+            UUID uuid = UUID.fromString(Objects.requireNonNull(stand.getCustomName()));
+            if (!Objects.requireNonNull(Bukkit.getPlayer(uuid)).isEmpty()) {
                 event.setCancelled(true);
             }
         }
@@ -152,19 +145,20 @@ public class VehicleInteractListener implements Listener {
 
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        Optional<Entity> maybeVehicle = Optional.ofNullable(event.getPlayer().getVehicle());
-        maybeVehicle.ifPresent(Entity::remove);
+        Optional.ofNullable(event.getPlayer().getVehicle())
+                .ifPresent(entity -> killVehicleEntityByCustomNameIsUUID(event.getPlayer()));
     }
 
     @EventHandler
-    public void onPlayerJoinEvent(PlayerBedLeaveEvent event) {
-        Optional<Entity> maybeVehicle = Optional.ofNullable(event.getPlayer().getVehicle());
-        maybeVehicle.ifPresent(Entity::remove);
+    public void onPlayerBedLeaveEvent(PlayerBedLeaveEvent event) {
+        Optional.ofNullable(event.getPlayer().getVehicle())
+                .ifPresent(entity -> killVehicleEntityByCustomNameIsUUID(event.getPlayer()));
+
     }
 
     @EventHandler
-    public void onPlayerJoinEvent(PlayerQuitEvent event) {
-        Optional<Entity> maybeVehicle = Optional.ofNullable(event.getPlayer().getVehicle());
-        maybeVehicle.ifPresent(Entity::remove);
+    public void onPlayerQuitEvent(PlayerQuitEvent event) {
+        Optional.ofNullable(event.getPlayer().getVehicle())
+                .ifPresent(entity -> killVehicleEntityByCustomNameIsUUID(event.getPlayer()));
     }
 }

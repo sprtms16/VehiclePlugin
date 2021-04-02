@@ -267,9 +267,7 @@ public abstract class VehicleObject {
     }
 
     public int seatLeavePlayer(Player player) {
-        if (seaterList.containsKey(player)) {
-            seaterList.remove(player);
-        }
+        seaterList.remove(player);
         return seaterList.size();
     }
 }

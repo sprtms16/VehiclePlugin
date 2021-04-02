@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,24 +35,24 @@ public abstract class GUI {
     public static short RED = 14;
     public static short BLACK = 15;
 
-    private static Map<Player, GUI> guiMap = new HashMap<Player, GUI>();
+    private static final Map<Player, GUI> guiMap = new HashMap<>();
 
     public static GUI getGUI(Player p) {
         return guiMap.getOrDefault(p, null);
     }
 
-    private Inventory inv;
+    private final Inventory inv;
     private Map<Integer, String> slotMap;
 
-    protected GUI(Player p, String name, int size) {
+    protected GUI(Player p, String name, int size, JavaPlugin plugin) {
         inv = Bukkit.createInventory(null, size, name);
-        slotMap = new HashMap<Integer, String>();
-        init();
+        slotMap = new HashMap<>();
+        init(plugin);
         p.openInventory(inv);
         guiMap.put(p, this);
     }
 
-    protected abstract void init();
+    protected abstract void init(JavaPlugin plugin);
 
     public abstract void onClick(InventoryClickEvent e);
 
@@ -72,13 +73,16 @@ public abstract class GUI {
     protected void setItem(String name, List<String> lore, Material m, int amount, int slot, String value, boolean glow) {
         ItemStack item = new ItemStack(m, amount);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        if (lore != null) meta.setLore(lore);
-        if (glow) {
-            meta.addEnchant(Enchantment.LURE, 1, false);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        if (meta != null) {
+            meta.setDisplayName(name);
+            if (lore != null)
+                meta.setLore(lore);
+            if (glow) {
+                meta.addEnchant(Enchantment.LURE, 1, false);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            item.setItemMeta(meta);
         }
-        item.setItemMeta(meta);
         slotMap.put(slot, value);
         inv.setItem(slot, item);
     }

@@ -1,52 +1,77 @@
 package model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Optional;
-
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @ToString
 public enum CarType {
-    TYPE1(64 - 58, "1번 타입", false),
-    TYPE2(64 - 53, "2번 타입", false),
-    TYPE3(64 - 48, "3번 타입", false),
-    TYPE4(64 - 42, "4번 타입", false),
-    TYPE5(64 - 37, "5번 타입", true),
-    TYPE6(64 - 32, "6번 타입", true),
-    TYPE7(64 - 26, "7번 타입", true),
-    TYPE8(64 - 21, "8번 타입", false),
-    TYPE9(64 - 16, "9번 타입", false),
-    TYPE10(64 - 10, "10번 타입", false),
-    TYPE11(64 - 5, "11번 타입", true),
-    TYPE12(64 - 0, "12번 타입", false);
-    private int type;
-    private String typeName;
-    private boolean isSmall;
-
-    CarType(int type, String typeName, boolean isSmall) {
-        this.type = type;
-        this.typeName = typeName;
-        this.isSmall = isSmall;
-    }
-
-    public static Optional<CarType> findBy(String type) {
-        for (CarType carType : values()) {
-            if (carType.getTypeName().equals(type)) {
-                return Optional.of(carType);
-            }
-        }
-        return Optional.empty();
-    }
-
-    public static Optional<CarType> findByName(String type) {
-        for (CarType carType : values()) {
-            if (carType.name().equals(type)) {
-                return Optional.of(carType);
-            }
-        }
-        return Optional.empty();
-    }
+    TYPE0(0),
+    TYPE1(1),
+    TYPE2(2),
+    TYPE3(3),
+    TYPE4(4),
+    TYPE5(5),
+    TYPE6(6),
+    TYPE7(7),
+    TYPE8(8),
+    TYPE9(9),
+    TYPE10(10),
+    TYPE11(11),
+    TYPE12(12),
+    TYPE13(13),
+    TYPE14(14),
+    TYPE15(15),
+    TYPE16(16),
+    TYPE17(17),
+    TYPE18(18),
+    TYPE19(19),
+    TYPE20(20),
+    TYPE21(21),
+    TYPE22(22),
+    TYPE23(23),
+    TYPE24(24),
+    TYPE25(25),
+    TYPE26(26),
+    TYPE27(27),
+    TYPE28(28),
+    TYPE29(29),
+    TYPE30(30),
+    TYPE31(31),
+    TYPE32(32),
+    TYPE33(33),
+    TYPE34(34),
+    TYPE35(35),
+    TYPE36(36),
+    TYPE37(37),
+    TYPE38(38),
+    TYPE39(39),
+    TYPE40(40),
+    TYPE41(41),
+    TYPE42(42),
+    TYPE43(43),
+    TYPE44(44),
+    TYPE45(45),
+    TYPE46(46),
+    TYPE47(47),
+    TYPE48(48),
+    TYPE49(49),
+    TYPE50(50),
+    TYPE51(51),
+    TYPE52(52),
+    TYPE53(53),
+    TYPE54(54),
+    TYPE55(55),
+    TYPE56(56),
+    TYPE57(57),
+    TYPE58(58),
+    TYPE59(59),
+    TYPE60(60),
+    TYPE61(61),
+    TYPE62(62),
+    TYPE63(63),
+    TYPE64(64);
+    private final int type;
 }
